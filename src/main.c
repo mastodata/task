@@ -10,12 +10,12 @@
 
 int main() {
     //char *filter = getenv("SUB_FILTER");
-    char *vent_address = getenv("VENT_ADDRESS");
+    char *task_address = getenv("TASK_ADDRESS");
     char *sink_address = getenv("SINK_ADDRESS");
 
-    printf("Starting with proxy_address=%s\n", vent_address);
+    printf("Starting with proxy_address=%s\n", task_address);
 
-    zsock_t *pull = zsock_new_pull(vent_address);
+    zsock_t *pull = zsock_new_pull(task_address);
     zsock_t *push = zsock_new_push(sink_address);
 
     char *string;
@@ -28,5 +28,6 @@ int main() {
 
     zstr_free(&string);
     zsock_destroy(&pull);
+    zsock_destroy(&push);
     return 0;
 }
