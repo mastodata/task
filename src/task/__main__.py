@@ -2,7 +2,7 @@ import os
 
 import zmq
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ctx = zmq.Context()
     task_address = os.environ["TASK_ADDRESS"]
     sink_address = os.environ["SINK_ADDRESS"]
@@ -19,3 +19,4 @@ if __name__ == '__main__':
 
     while True:
         status = pull.recv_json()
+        push.send_json(len(status["id"]))  # type: ignore
