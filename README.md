@@ -1,5 +1,9 @@
 # task
 
-# Building
+Process Mastodon [Statuses] pulled from ZeroMQ.
 
-Requires `libczmq-dev` and `libzmq3-dev`
+Processing includes:
+- [ ] Textual analysis (what this means is TBD)
+
+# Development
+Use `pdm`.
