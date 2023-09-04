@@ -19,4 +19,4 @@ if __name__ == "__main__":
 
     while True:
         status = pull.recv_json()
-        push.send_json(len(status["id"]))  # type: ignore
+        push.send_string(str(status["id"]))  # type: ignore
