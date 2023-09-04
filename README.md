@@ -1,6 +1,6 @@
 # task
 
-Process Mastodon [Statuses] pulled from ZeroMQ.
+Process Mastodon [Statuses](https://docs.joinmastodon.org/entities/Status/) pulled from ZeroMQ.
 
 Processing includes:
 - [ ] Textual analysis (what this means is TBD)
