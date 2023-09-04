@@ -1,45 +1,26 @@
 #syntax=docker/dockerfile:1.5
 
-ARG DEBIAN_VERSION=bullseye
-ARG DEBIAN_VERSION_NUMBER=11
-ARG PROJECT=task
-ARG GCC_VERSION=11.4
+# ====================================================================================================
+# Builder
+FROM python:3.11-slim@sha256:4b2e5faf103be72abb65046501a89f8feaef28c1148fc2f9b3326e31694ee735 as builder
+
+RUN pip install -U pip setuptools wheel
+RUN pip install pdm
+
+WORKDIR /app
+COPY pyproject.toml pdm.lock ./
+RUN mkdir __pypackages__ && pdm install --prod --no-lock --no-editable
+COPY src/ src/
+RUN pdm install --prod --no-lock --no-editable
 
 # ====================================================================================================
-# Base
-FROM gcc:${GCC_VERSION}-${DEBIAN_VERSION} AS base
+# Prod
+FROM python:3.11-slim@sha256:4b2e5faf103be72abb65046501a89f8feaef28c1148fc2f9b3326e31694ee735 as prod
 
-
+ENV PYTHONPATH=/app/pkgs
 WORKDIR /app
-
-RUN <<EOT
-#!/usr/bin/env bash
-set -eu
-
-apt -q update
-apt -qy --no-install-recommends install libczmq-dev libzmq3-dev
-rm -rf /var/lib/apt/lists/*
-EOT
+COPY --from=builder /app/__pypackages__/3.11/lib pkgs/
 
 COPY src/ src/
-COPY Makefile Makefile
 
-RUN make OPT_LEVEL='-O3 -flto'
-
-# ==================================================
-FROM debian:${DEBIAN_VERSION}-slim AS release
-
-WORKDIR /app
-
-RUN <<EOT
-#!/usr/bin/env bash
-set -eu
-
-apt -q update
-apt -qy --no-install-recommends install libczmq-dev libzmq3-dev
-rm -rf /var/lib/apt/lists/*
-EOT
-
-COPY --from=base /app/build/${PROJECT} ./${PROJECT}
-
-ENTRYPOINT [ "./task" ]
+CMD ["python", "src/task/__main__.py"]
